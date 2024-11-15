@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-import 'a.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,7 +10,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,22 +33,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Focus(
           onKey: (FocusNode node, RawKeyEvent event) {
-            if (event.character != null && RegExp(r'[a-zA-Z]').hasMatch(event.character!)) {
-              print('拦截了字母键: ${event.character}');
-              return KeyEventResult.handled; // 阻止事件继续传递
+            if (RegExp(r'^[0-9]$').hasMatch(event.character!)) {
+              log(event.logicalKey.toString());
+              log(event.character?.codeUnits.toString() ?? 'null');
+              _controller.text = _controller.text + event.character!;
+              return KeyEventResult.handled;
             }
-            return KeyEventResult.ignored; // 允许事件继续传递
+            return KeyEventResult.ignored;
           },
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomTextField(),
-              TextField(),
+              TextField(
+                controller: _controller,
+              ),
+              const SizedBox(height: 20),
+              TextField(), // Additional TextField for testing
             ],
           ),
         ),
