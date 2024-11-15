@@ -36,12 +36,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Column(
-        children: [
-          CustomTextField(),
-          TextField(),
-        ],
-      )),
+      body: Center(
+        child: Focus(
+          onKey: (FocusNode node, RawKeyEvent event) {
+            if (event.character != null && RegExp(r'[a-zA-Z]').hasMatch(event.character!)) {
+              print('拦截了字母键: ${event.character}');
+              return KeyEventResult.handled; // 阻止事件继续传递
+            }
+            return KeyEventResult.ignored; // 允许事件继续传递
+          },
+          child: Column(
+            children: [
+              CustomTextField(),
+              TextField(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
